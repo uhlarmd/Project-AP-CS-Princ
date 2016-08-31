@@ -169,8 +169,8 @@ class SnakeGame:
 
     def drawDeath(self):
         self.screen.fill((255, 0, 0))
-        self.screen.blit(self.font.render("Game over! Press Space to start a new game", 1, (255, 255, 255)), (20, 150))
-        self.screen.blit(self.font.render("Your score is: %d" % self.score, 1, (255, 255, 255)), (140, 180))
+        self.screen.blit(self.font.render("Game over! Press Space to start a new game", 1, (255, 255, 255)), (137, 150))
+        self.screen.blit(self.font.render("Your score is: %d" % self.score, 1, (255, 255, 255)), (275, 180))
         pygame.display.flip()
 
     def run(self, events):

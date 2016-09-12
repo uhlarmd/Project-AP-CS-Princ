@@ -104,6 +104,9 @@ class SnakeGame:
 
         self.addFood()
 
+    def randomColor(self):
+        pass
+
     def addFood(self):
         fx = None
         fy = None
@@ -166,6 +169,7 @@ class SnakeGame:
             pygame.draw.rect(self.screen, FOOD_COLOR, (blockWidth * (fx-1), blockHeight * (fy-1), blockWidth, blockHeight))
 
         pygame.display.flip()
+
 
     def drawDeath(self):
         self.screen.fill((255, 0, 0))

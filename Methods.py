@@ -20,8 +20,9 @@ WORLD_SIZE_Y = 50
 
 
 SNAKE_START_LENGTH = 4
-SNAKE_COLOR = (0, 255, 0)
-FOOD_COLOR = (255, 0, 0)
+SNAKE_COLOR = ((random.randint(0, 255), random.randint(0, 255), random.randint(0,255)))
+FOOD_COLOR = ((random.randint(0, 255), random.randint(0, 255), random.randint(0,255)))
+BARRIER_COLOR = (0, 0, 0)
 
 
 class Snake:
@@ -40,7 +41,6 @@ class Snake:
         for n in range(0, self.startLength):
             self.pieces.append((self.startX, self.startY + n))
 
-    # Changes the direction of the snake
     def changeDirection(self, direction):
 
         if self.direction == 1 and direction == 2: return
@@ -83,6 +83,7 @@ class Snake:
         return len([p for p in self.pieces if p == self.getHead()]) > 1
 
 
+
 class SnakeGame:
 
     def __init__(self, window, screen, clock, font):
@@ -101,11 +102,11 @@ class SnakeGame:
         self.sizeY = WORLD_SIZE_Y
         self.food = []
         self.snake = Snake(WORLD_SIZE_X / 2, WORLD_SIZE_Y / 2, SNAKE_START_LENGTH)
+        self.barrier = []
 
         self.addFood()
+        self.addBarrier()
 
-    def randomColor(self):
-        pass
 
     def addFood(self):
         fx = None
@@ -116,6 +117,16 @@ class SnakeGame:
             fy = random.randint(1, self.sizeY)
 
         self.food.append((fx, fy))
+
+    def addBarrier(self):
+        fx = None
+        fy = None
+
+        while fx is None or fy is None or (fx, fy) in self.barrier:
+            fx = random.randint(1, self.sizeX)
+            fy = random.randint(1, self.sizeY)
+
+        self.barrier.append((fx,fy))
 
     def input(self, events):
         for e in events:
@@ -143,6 +154,12 @@ class SnakeGame:
                 self.addFood()
                 self.snake.grow()
                 self.score += len(self.snake.pieces) * 50
+                if self.score%100 == 0:
+                    self.addBarrier()
+
+        for barrier in self.barrier:
+            if self.snake.getHead() == barrier:
+                self.playing = False
 
         (hx, hy) = self.snake.getHead()
         if self.snake.collidesWithSelf() or hx < 1 or hy < 1 or hx > self.sizeX or hy > self.sizeY:
@@ -154,9 +171,13 @@ class SnakeGame:
         self.fps = STARTING_FPS
         self.score = 0
         self.snake.reset()
+        self.barrier = [] 
+        self.addBarrier()
+
 
     def draw(self):
-        self.screen.fill((45, 45, 45))
+        # self.screen.fill((random.randint(0, 255), random.randint(0, 255), random.randint(0,255)))
+        self.screen.fill((150, 150, 150))
 
         (width, height) = self.window.get_size()
         blockWidth = int(width / self.sizeX)
@@ -168,6 +189,9 @@ class SnakeGame:
         for (fx, fy) in self.food:
             pygame.draw.rect(self.screen, FOOD_COLOR, (blockWidth * (fx-1), blockHeight * (fy-1), blockWidth, blockHeight))
 
+        for (fx, fy) in self.barrier:
+            pygame.draw.rect(self.screen, BARRIER_COLOR, (blockWidth * (fx-1), blockHeight * (fy-1), blockWidth, blockHeight))
+
         pygame.display.flip()
 
 
@@ -177,13 +201,20 @@ class SnakeGame:
         self.screen.blit(self.font.render("Your score is: %d" % self.score, 1, (255, 255, 255)), (275, 180))
         pygame.display.flip()
 
+    def drawStart(self):
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(self.font.render("Welcome to snake, collect the food and avoid", 1, (255, 255, 255)), (137, 150))
+        self.screen.blit(self.font.render("the black barriers!", 1, (255, 255, 255)), (275, 180))
+
     def run(self, events):
         if not self.input(events): return False
 
-        if self.playing: 
-            self.update()
-            self.draw()
-        else: self.drawDeath()
+
+        if self.start:
+            if self.playing: 
+                self.update()
+                self.draw()
+            else: self.drawDeath()
 
         self.clock.tick(self.fps)
 

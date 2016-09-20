@@ -107,6 +107,9 @@ class SnakeGame:
         self.addFood()
         self.addBarrier()
 
+    def getFoodPos(self):
+        return self.food[0]
+
 
     def addFood(self):
         fx = None
@@ -148,6 +151,11 @@ class SnakeGame:
         self.snake.changeDirection(self.nextDirection)
         self.snake.update()
 
+        # for barrier in self.barrier:
+        #     if self.food.getFoodPos() == barrier:
+        #         self.food.remove(food)
+        #         self.addFood()
+
         for food in self.food: 
             if self.snake.getHead() == food:
                 self.food.remove(food)
@@ -156,11 +164,13 @@ class SnakeGame:
                 self.score += len(self.snake.pieces) * 50
                 if self.score%100 == 0:
                     self.addBarrier()
+                
 
         for barrier in self.barrier:
             if self.snake.getHead() == barrier:
                 self.playing = False
 
+        # (bx, by) = self.food.getFoodPos()
         (hx, hy) = self.snake.getHead()
         if self.snake.collidesWithSelf() or hx < 1 or hy < 1 or hx > self.sizeX or hy > self.sizeY:
             self.playing = False
@@ -210,11 +220,11 @@ class SnakeGame:
         if not self.input(events): return False
 
 
-        if self.start:
-            if self.playing: 
-                self.update()
-                self.draw()
-            else: self.drawDeath()
+        # if self.start:
+        if self.playing: 
+            self.update()
+            self.draw()
+        else: self.drawDeath()
 
         self.clock.tick(self.fps)
 

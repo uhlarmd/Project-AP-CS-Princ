@@ -118,7 +118,7 @@ class SnakeGame:
         while fx is None or fy is None or (fx, fy) in self.food:
             fx = random.randint(1, self.sizeX)
             fy = random.randint(1, self.sizeY)
-
+        
         self.food.append((fx, fy))
 
     def addBarrier(self):
